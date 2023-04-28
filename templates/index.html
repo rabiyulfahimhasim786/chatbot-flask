@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Chatbot</title>
+  </head>
+  <body>
+    <h1>Chatbot</h1>
+    <div id="chatbot">
+      <div id="chatbot-container"></div>
+      <div id="input-container">
+        <input type="text" id="input-box" placeholder="Type your message here...">
+        <button type="button" id="send-btn">Send</button>
+      </div>
+    </div>
+    <script>
+      let chatbotContainer = document.getElementById("chatbot-container");
+      let inputBox = document.getElementById("input-box");
+      let sendBtn = document.getElementById("send-btn");
+
+      sendBtn.addEventListener("click", () => {
+        let userMessage = inputBox.value;
+        inputBox.value = "";
+
+        let messageElement = document.createElement("div");
+        messageElement.classList.add("message", "user-message");
+        messageElement.innerHTML = userMessage;
+        chatbotContainer.appendChild(messageElement);
+
+        fetch("/get-response", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            message: userMessage
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          let botMessage = data.response;
+
+          let messageElement = document.createElement("div");
+          messageElement.classList.add("message", "bot-message");
+          messageElement.innerHTML = botMessage;
+          chatbotContainer.appendChild(messageElement);
+        });
+      });
+    </script>
+  </body>
+</html>
